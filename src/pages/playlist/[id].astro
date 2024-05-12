@@ -1,0 +1,56 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { allPlaylists, songs, type Playlist, type Song } from '@/lib/data'
+
+const { id } = Astro.params
+
+const playlist: Playlist | undefined = allPlaylists.find(
+  (playlist) => playlist.id === id
+)
+const playlistSongs: Song | undefined = songs.find(
+  (song) => song.albumId === playlist?.albumId
+)
+---
+
+<Layout title={playlist?.title || 'Playlist'}>
+  <div
+    id="playlist-container"
+    class="relative flex flex-col h-full overflow-x-hidden"
+    transition:name=`playlist ${id} box`
+  >
+    <!-- Header -->
+    <div class="p-4"></div>
+
+    <header class="flex items-end gap-8 p-4">
+      <picture class="select-none aspect-square w-32 h-32 flex-none">
+        <img
+          src={playlist?.cover}
+          alt={`Cover of ${playlist?.title}`}
+          class="object-cover w-full h-full rounded-md"
+          transition:name=`playlist ${playlist?.id} image`
+        />
+      </picture>
+
+      <div class="flex flex-col justify-between">
+        <span class="text-white text-base mb-2">Playlist</span>
+        <h1
+          class="xl:text-8xl lg:text-7xl md:text-5xl text-4xl font-black tracking-tighter text-white"
+          transition:name=`playlist ${id} title`
+        >
+          {playlist?.title}
+        </h1>
+
+        <div class="flex flex-col justify-end flex-1 text-base mt-1">
+          <div transition:name=`playlist ${id} artists`>
+            <span class="text-[15px]">{playlist?.artists.join(', ')}</span>
+          </div>
+          <p class="mt-1 pl-1">
+            <span>50 songs, 3h approximately</span>
+          </p>
+        </div>
+      </div>
+    </header>
+  </div>
+</Layout>
+
+<style></style>
