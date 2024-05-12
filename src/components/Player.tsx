@@ -58,6 +58,29 @@ export const Volume = () => (
   </svg>
 )
 
+interface CurrentSongProps {
+  title: string | undefined
+  image: string | undefined
+  id: number | undefined
+  artists: string[] | undefined
+}
+
+function CurrentSong({ image, title, id, artists }: CurrentSongProps) {
+  const artistsString = artists && artists.join(', ')
+
+  return (
+    <div className="relative flex items-center gap-4 overflow-hidden">
+      <picture className="h-14 w-14 rounded-[4px] bg-zinc-900 overflow-hidden">
+        <img src={image} alt={title} className="w-full h-auto object-cover" />
+      </picture>
+      <div className='flex flex-col justify-center'>
+        <p className='text-sm text-white'>{title}</p>
+        <span className='text-[12px]'>{artistsString}</span>
+      </div>
+    </div>
+  )
+}
+
 export function Player() {
   const { isPlaying, setIsPlaying, currentMusic } = usePlayerStore(
     (state) => state
@@ -71,25 +94,30 @@ export function Player() {
       : !isPlaying && audioRef.current && audioRef.current.pause()
   }, [isPlaying])
 
-  useEffect(() => {
-    if (audioRef.current) {
-      const { song, playlist } = currentMusic
+  // useEffect(() => {
+  //   if (audioRef.current) {
+  //     const { song, playlist } = currentMusic
 
-      if (song) {
-        const src = `/music/${playlist?.id}/0${song.id}.mp3`
-        audioRef.current.src = src
-        audioRef.current.play()
-      }
-    }
-  }, [currentMusic])
+  //     if (song) {
+  //       const src = `/music/${playlist?.id}/0${song.id}.mp3`
+  //       audioRef.current.src = src
+  //       audioRef.current.play()
+  //     }
+  //   }
+  // }, [currentMusic])
 
   const handleClick = () => {
     setIsPlaying(!isPlaying)
   }
 
   return (
-    <div className="flex justify-between w-full px-4 z-50">
-      <div>Current song...</div>
+    <div className="flex items-center justify-between w-full px-4 z-50 h-[65px] py-1">
+       <CurrentSong
+        artists={currentMusic.song?.artists}
+        id={currentMusic.song?.id}
+        image={currentMusic.song?.image}
+        title={currentMusic.song?.title}
+      />
 
       <div className="grid place-content-center gap-4 flex-1">
         <div className="flex justify-center">

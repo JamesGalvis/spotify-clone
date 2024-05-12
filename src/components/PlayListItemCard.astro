@@ -12,7 +12,7 @@ const { id, title, cover, artists } = playlist
 const artistsString = artists.join(', ')
 ---
 
-<article class="group relative hover:bg-[#1a1a1a] transition-all duration-300">
+<article class="group relative hover:bg-[#1a1a1a] transition-all duration-300 rounded-md">
   <div
     class="absolute right-5 bottom-[70px] translate-y-4 transition-all duration-200 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 z-10"
   >
@@ -20,7 +20,7 @@ const artistsString = artists.join(', ')
   </div>
   <a
     href={`/playlist/${id}`}
-    class="playlist-item relative flex flex-col gap-2 p-3 overflow-hidden rounded-md"
+    class="playlist-item relative flex flex-col gap-2 p-3 overflow-hidden"
     transition:name=`playlist ${id} box`
   >
     <picture class="relative aspect-square w-full h-auto flex-none">
