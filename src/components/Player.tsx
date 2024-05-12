@@ -1,5 +1,6 @@
 import { usePlayerStore } from '@/store/player-store'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { Slider } from './ui/Slider'
 
 export const Pause = ({ className }: { className: string }) => (
   <svg
@@ -65,7 +66,7 @@ interface CurrentSongProps {
   artists: string[] | undefined
 }
 
-function CurrentSong({ image, title, id, artists }: CurrentSongProps) {
+function CurrentSong({ image, title, artists }: CurrentSongProps) {
   const artistsString = artists && artists.join(', ')
 
   return (
@@ -73,16 +74,53 @@ function CurrentSong({ image, title, id, artists }: CurrentSongProps) {
       <picture className="h-14 w-14 rounded-[4px] bg-zinc-900 overflow-hidden">
         <img src={image} alt={title} className="w-full h-auto object-cover" />
       </picture>
-      <div className='flex flex-col justify-center'>
-        <p className='text-sm text-white'>{title}</p>
-        <span className='text-[12px]'>{artistsString}</span>
+      <div className="flex flex-col justify-center">
+        <p className="text-sm text-white">{title}</p>
+        <span className="text-[12px]">{artistsString}</span>
       </div>
     </div>
   )
 }
 
+function VolumeControl() {
+  const volume = usePlayerStore((state) => state.volume)
+  const setVolume = usePlayerStore((state) => state.setVolume)
+
+  const previousVolumeRef = useRef(volume)
+  const isVolumeSilence = volume < 0.01
+
+  const handleClickVolume = () => {
+    if (isVolumeSilence) {
+      setVolume(previousVolumeRef.current)
+    } else {
+      previousVolumeRef.current = volume
+      setVolume(0)
+    }
+  }
+
+  return (
+    <div className="group flex items-center justify-center gap-x-2">
+      <button className='hover:text-white' onClick={handleClickVolume}>
+        {volume < 0.01 ? <VolumeSilence /> : <Volume />}
+      </button>
+      <Slider
+        defaultValue={[100]}
+        max={100}
+        min={0}
+        value={[volume * 100]}
+        className="w-[93px] cursor-pointer"
+        onValueChange={(value) => {
+          const [currentValue] = value
+          const volumeValue = currentValue / 100
+          setVolume(volumeValue)
+        }}
+      />
+    </div>
+  )
+}
+
 export function Player() {
-  const { isPlaying, setIsPlaying, currentMusic } = usePlayerStore(
+  const { isPlaying, setIsPlaying, currentMusic, volume } = usePlayerStore(
     (state) => state
   )
 
@@ -94,17 +132,24 @@ export function Player() {
       : !isPlaying && audioRef.current && audioRef.current.pause()
   }, [isPlaying])
 
-  // useEffect(() => {
-  //   if (audioRef.current) {
-  //     const { song, playlist } = currentMusic
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+    }
+  }, [volume])
 
-  //     if (song) {
-  //       const src = `/music/${playlist?.id}/0${song.id}.mp3`
-  //       audioRef.current.src = src
-  //       audioRef.current.play()
-  //     }
-  //   }
-  // }, [currentMusic])
+  useEffect(() => {
+    if (audioRef.current) {
+      const { song, playlist } = currentMusic
+
+      if (song) {
+        const src = `/music/${playlist?.id}/0${song.id}.mp3`
+        audioRef.current.src = src
+        audioRef.current.volume = volume
+        audioRef.current.play()
+      }
+    }
+  }, [currentMusic])
 
   const handleClick = () => {
     setIsPlaying(!isPlaying)
@@ -112,7 +157,7 @@ export function Player() {
 
   return (
     <div className="flex items-center justify-between w-full px-4 z-50 h-[65px] py-1">
-       <CurrentSong
+      <CurrentSong
         artists={currentMusic.song?.artists}
         id={currentMusic.song?.id}
         image={currentMusic.song?.image}
@@ -127,7 +172,9 @@ export function Player() {
         </div>
       </div>
 
-      <div>Volume</div>
+      <div>
+        <VolumeControl />
+      </div>
 
       <audio ref={audioRef} />
     </div>

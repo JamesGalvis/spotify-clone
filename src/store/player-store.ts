@@ -8,6 +8,8 @@ interface PlayerState {
     song: Song | null
     songs: Song[] | null
   }
+  volume: number
+  setVolume: (volume: number) => void
   setIsPlaying: (isPlaying: boolean) => void
   setCurrentMusic: (currentMusic: {
     playlist: Playlist | null
@@ -23,6 +25,8 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     song: null,
     songs: [],
   },
+  volume: 1,
+  setVolume: (volume) => set({ volume }),
   setIsPlaying: (isPlaying) => set({ isPlaying }),
   setCurrentMusic: (currentMusic) => set({ currentMusic }),
 }))
