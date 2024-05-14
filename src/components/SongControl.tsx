@@ -36,7 +36,7 @@ export function SongControl({ audio }: { audio: RefObject<HTMLAudioElement> }) {
         min={0}
         max={audio.current?.duration ?? 0}
         value={[currentTime]}
-        className="w-[345px] cursor-pointer"
+        className="lg:w-[400px] xl:w-[450px] cursor-pointer"
         onValueChange={(value) => {
           const [newCurrentTime] = value
           setCurrentTime(newCurrentTime)
