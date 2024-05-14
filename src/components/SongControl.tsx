@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { Slider } from './ui/Slider'
+import { usePlayerStore } from '@/store/player-store'
 
 export function SongControl({ audio }: { audio: RefObject<HTMLAudioElement> }) {
+  const { setIsPlaying } = usePlayerStore((state) => state)
   const [currentTime, setCurrentTime] = useState(0)
   const isChange = useRef(false)
 
@@ -18,6 +20,11 @@ export function SongControl({ audio }: { audio: RefObject<HTMLAudioElement> }) {
   const handleTimeUpdate = () => {
     if (audio.current && !isChange.current) {
       setCurrentTime(audio.current.currentTime)
+
+      if (audio.current.currentTime === audio.current.duration) {
+        setIsPlaying(false)
+        setCurrentTime(0)
+      }
     }
   }
 
