@@ -88,7 +88,7 @@ export function Player() {
             </button>
           </div>
           <SongControl audio={audioRef} />
-          <audio ref={audioRef} />
+          <audio draggable ref={audioRef} />
         </div>
       </div>
 
