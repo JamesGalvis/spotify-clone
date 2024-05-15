@@ -11,21 +11,23 @@ export function SongControl({ audio }: { audio: RefObject<HTMLAudioElement> }) {
 
   useEffect(() => {
     audio.current?.addEventListener('timeupdate', handleTimeUpdate)
+    audio.current?.addEventListener('ended', handleEnded)
 
     return () => {
       audio.current?.removeEventListener('timeupdate', handleTimeUpdate)
+      audio.current?.removeEventListener('ended', handleEnded)
     }
   }, [audio])
 
   const handleTimeUpdate = () => {
     if (audio.current && !isChange.current) {
       setCurrentTime(audio.current.currentTime)
-
-      if (audio.current.currentTime === audio.current.duration) {
-        setIsPlaying(false)
-        setCurrentTime(0)
-      }
     }
+  }
+
+  const handleEnded = () => {
+    setIsPlaying(false)
+    setCurrentTime(0)
   }
 
   const formatTime = (time: number) => {
